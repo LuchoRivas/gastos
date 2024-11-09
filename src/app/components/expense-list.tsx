@@ -1,16 +1,13 @@
-"use client";
-import { useRef } from "react";
-import { ExpenseType } from "../types/expense";
+import { Expense } from "../types/expense";
+import { FIXED_EXPENSE_TYPES_ROWS } from "./constants";
 
-const FIXED_EXPENSE_TYPES: ExpenseType[] = [
-  "Agua",
-  "Alquiler",
-  "Gas",
-  "Internet",
-  "Luz",
-];
+const fetchExpenses = async () => {
+  const response = await fetch(`${process.env.NEXT_BASE_URL}/api/expenses`);
+  // datos de `expenses`
+  return await response.json();
+};
 
-function ExpenseList() {
+async function ExpenseList() {
   const getCurrentMoth = () => {
     const date = new Date();
     return date.toLocaleDateString("default", {
@@ -18,7 +15,8 @@ function ExpenseList() {
       year: "numeric",
     });
   };
-
+  const expenses: Expense[] = await fetchExpenses();
+  
   return (
     <>
       <span>componente expense list</span>
@@ -26,34 +24,34 @@ function ExpenseList() {
         {/* titulo */}
         {getCurrentMoth()}
       </div>
-      <div>{/* listado */}
-
+      <div>
+        {/* listado */}
         <table>
           <thead>
             <tr>
-              <th>
-                tipo de gasto
-              </th>
-              <th>
-                monto
-              </th>
+              {/* titulos */}
+              <th>tipo de gasto</th>
+              <th>monto</th>
             </tr>
           </thead>
           <tbody>
-            {
-              FIXED_EXPENSE_TYPES.map((expenseType) => (
-                <tr key={expenseType}>
-                  <td>
-                    {expenseType}
-                  </td>
-                  <td>
-                    <span>
-                      No fue cargado
-                    </span>
-                  </td>
-                </tr>
-              ))
-            }
+            {FIXED_EXPENSE_TYPES_ROWS.map((expenseTypeRow) => (
+              <tr key={expenseTypeRow}>
+                {/* tipo de expensa */}
+                <td>{expenseTypeRow}</td>
+                <td>
+                  {
+                    expenses.find(
+                      (expense) => expense.expenseType === expenseTypeRow
+                    )
+                      ? expenses.find(
+                          (expense) => expense.expenseType === expenseTypeRow
+                        )?.amount
+                      : "No cargado" // Mensaje por defecto
+                  }
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

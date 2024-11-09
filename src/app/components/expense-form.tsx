@@ -1,17 +1,7 @@
-"use client"
+"use client";
 import { useRef } from "react";
 import { ExpenseType } from "../types/expense";
-
-const EXPENSE_TYPES: { value: ExpenseType; label: string }[] = [
-  {
-    value: "Luz",
-    label: "Luz",
-  },
-  { value: "Agua", label: "Agua" },
-  { value: "Internet", label: "Internet" },
-  { value: "Gas", label: "Gas" },
-  { value: "Alquiler", label: "Alquiler" },
-];
+import { EXPENSE_TYPES_OPTIONS } from "./constants";
 
 function ExpenseForm() {
   const expenseTypeRef = useRef<ExpenseType>();
@@ -19,9 +9,28 @@ function ExpenseForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("eve", e);
-    console.log("amountRef", amountRef);
-    console.log("expenseTypeRef", expenseTypeRef);
+    createExpense();
+  };
+
+  const createExpense = async () => {
+    const response = await fetch("api/expenses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: amountRef.current,
+        expenseType: expenseTypeRef.current,
+        payer: "Hosty",
+      }),
+    });
+    response
+      .json()
+      .then(() => {
+        alert("Gasto creado!");
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => window.location.reload());
   };
 
   return (
@@ -35,7 +44,7 @@ function ExpenseForm() {
             (expenseTypeRef.current = e.target.value as ExpenseType)
           }
         >
-          {EXPENSE_TYPES.map((expenseTypeOption) => (
+          {EXPENSE_TYPES_OPTIONS.map((expenseTypeOption) => (
             <option
               key={expenseTypeOption.value}
               value={expenseTypeOption.value}

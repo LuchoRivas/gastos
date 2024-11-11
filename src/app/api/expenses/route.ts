@@ -1,20 +1,24 @@
-import { Expense } from "@/app/types/expense";
+import clientPromise from "@/app/lib/mongo";
 import { NextResponse } from "next/server";
 
-// ""Base de datos""
-const expensesDB: Expense[] = [];
+const CLIENT_DB = "gastosDB";
+const CLIENT_COLLECTION = "gastos";
 
 // Generador de IDs
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
 // Handler - obtener todos los gastos
 export async function GET() {
-  return NextResponse.json(expensesDB);
+  debugger;
+  const client = await clientPromise;
+  const db = client.db(CLIENT_DB);
+  const expenses = await db.collection(CLIENT_COLLECTION).find({}).toArray();
+  console.log(NextResponse.json(expenses));
+  return NextResponse.json(expenses);
 }
 
 // Handler - crear un nuevo gasto
 export async function POST(request: Request) {
-    debugger
   const { expenseType, amount, payer } = await request.json();
 
   if (!expenseType || !amount || !payer) {
@@ -24,22 +28,30 @@ export async function POST(request: Request) {
     );
   }
 
-  // nuevo gasto
-  const newExpense: Expense = {
-    id: generateId(),
-    expenseType,
-    amount,
-    payer,
-    createdAt: new Date().toLocaleDateString("es-AR"),
-    settled: true,
-    sharedAmount: {
-      userA: { amount: amount / 2, paid: payer === "UserA" },
-      userB: { amount: amount / 2, paid: payer === "UserB" },
-    },
-  };
+  try {
+    const client = await clientPromise;
+    const db = client.db(CLIENT_DB);
 
-  // "base de datos"
-  expensesDB.push(newExpense);
+    // nuevo gasto db
+    const newExpense = {
+      expenseType: expenseType,
+      amount: amount,
+      createdAt: new Date(),
+      payer: process.env.NODE_ENV === "development" && "Hosty",
+      settled: true,
+      // no se si usar esto aun
+      // sharedAmount: {
+      //   userA: { amount: amount / 2, paid: payer === "UserA" },
+      //   userB: { amount: amount / 2, paid: payer === "UserB" },
+      // },
+    };
 
-  return NextResponse.json(newExpense, { status: 201 });
+    const result = await db.collection(CLIENT_COLLECTION).insertOne(newExpense);
+    return NextResponse.json(result);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error || "Error al crear el gasto" },
+      { status: 500 }
+    );
+  }
 }

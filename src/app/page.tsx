@@ -2,13 +2,16 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import ExpenseForm from "./components/expense-form";
 import ExpenseList from "./components/expense-list";
+import Accordion from "./components/accordion";
 
 export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <ExpenseForm />
         <ExpenseList />
+        <Accordion>
+          <ExpenseForm />
+        </Accordion>
       </main>
       <footer className={styles.footer}>
         <a

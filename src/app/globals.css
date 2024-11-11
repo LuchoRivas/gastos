@@ -40,3 +40,12 @@ a {
     color-scheme: dark;
   }
 }
+
+.content {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.content.hidden {
+  opacity: 0;
+}

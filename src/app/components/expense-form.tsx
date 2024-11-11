@@ -28,40 +28,34 @@ function ExpenseForm() {
         alert("Gasto creado!");
       })
       .catch((error) => {
-        console.error(error);
+        console.error(error || "error!");
       })
       .finally(() => window.location.reload());
   };
 
   return (
-    <>
-      <span>componente expense form</span>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="expenseType">Tipo de gasto</label>
-        <select
-          id="expenseType"
-          onChange={(e) =>
-            (expenseTypeRef.current = e.target.value as ExpenseType)
-          }
-        >
-          {EXPENSE_TYPES_OPTIONS.map((expenseTypeOption) => (
-            <option
-              key={expenseTypeOption.value}
-              value={expenseTypeOption.value}
-            >
-              {expenseTypeOption.label}
-            </option>
-          ))}
-        </select>
-        <input
-          id="amount"
-          type="number"
-          placeholder="Monto"
-          onChange={(e) => (amountRef.current = Number(e.target.value))}
-        />
-        <button>Agregar</button>
-      </form>
-    </>
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="expenseType">Tipo de gasto</label>
+      <select
+        id="expenseType"
+        onChange={(e) =>
+          (expenseTypeRef.current = e.target.value as ExpenseType)
+        }
+      >
+        {EXPENSE_TYPES_OPTIONS.map((expenseTypeOption) => (
+          <option key={expenseTypeOption.value} value={expenseTypeOption.value}>
+            {expenseTypeOption.label}
+          </option>
+        ))}
+      </select>
+      <input
+        id="amount"
+        type="number"
+        placeholder="Monto"
+        onChange={(e) => (amountRef.current = Number(e.target.value))}
+      />
+      <button>Agregar</button>
+    </form>
   );
 }
 

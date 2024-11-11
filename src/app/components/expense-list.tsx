@@ -3,7 +3,6 @@ import { FIXED_EXPENSE_TYPES_ROWS } from "./constants";
 
 const fetchExpenses = async () => {
   const response = await fetch(`${process.env.NEXT_BASE_URL}/api/expenses`);
-  // datos de `expenses`
   return await response.json();
 };
 
@@ -16,10 +15,12 @@ async function ExpenseList() {
     });
   };
   const expenses: Expense[] = await fetchExpenses();
-  
+  const divideHalf = (ammountToDivide?: number) => {
+    if (!ammountToDivide) return;
+    return ammountToDivide / 2;
+  };
   return (
-    <>
-      <span>componente expense list</span>
+    <div>
       <div>
         {/* titulo */}
         {getCurrentMoth()}
@@ -44,18 +45,27 @@ async function ExpenseList() {
                     expenses.find(
                       (expense) => expense.expenseType === expenseTypeRow
                     )
-                      ? expenses.find(
+                      ? // ? divideHalf(
+                        expenses.find(
                           (expense) => expense.expenseType === expenseTypeRow
                         )?.amount
-                      : "No cargado" // Mensaje por defecto
+                      : // )
+                        "No cargado" // Mensaje por defecto
                   }
+                  <p>
+                    {divideHalf(
+                      expenses.find(
+                        (expense) => expense.expenseType === expenseTypeRow
+                      )?.amount
+                    )}
+                  </p>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </>
+    </div>
   );
 }
 

@@ -1,10 +1,8 @@
+import { fetchExpenses } from "../services/expense";
 import { Expense } from "../types/expense";
 import { FIXED_EXPENSE_TYPES_ROWS } from "./constants";
 
-const fetchExpenses = async () => {
-  const response = await fetch(`${process.env.NEXT_BASE_URL}/api/expenses`);
-  return await response.json();
-};
+
 
 async function ExpenseList() {
   const getCurrentMoth = () => {
@@ -15,10 +13,12 @@ async function ExpenseList() {
     });
   };
   const expenses: Expense[] = await fetchExpenses();
+  
   const divideHalf = (ammountToDivide?: number) => {
     if (!ammountToDivide) return;
     return ammountToDivide / 2;
   };
+
   return (
     <div>
       <div>

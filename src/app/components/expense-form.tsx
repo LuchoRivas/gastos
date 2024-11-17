@@ -2,6 +2,7 @@
 import { useRef } from "react";
 import { ExpenseType } from "../types/expense";
 import { EXPENSE_TYPES_OPTIONS } from "./constants";
+import { createExpense } from "../services/expense";
 
 function ExpenseForm() {
   const expenseTypeRef = useRef<ExpenseType>();
@@ -9,28 +10,8 @@ function ExpenseForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createExpense();
-  };
-
-  const createExpense = async () => {
-    const response = await fetch("api/expenses", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount: amountRef.current,
-        expenseType: expenseTypeRef.current,
-        payer: "Hosty",
-      }),
-    });
-    response
-      .json()
-      .then(() => {
-        alert("Gasto creado!");
-      })
-      .catch((error) => {
-        console.error(error || "error!");
-      })
-      .finally(() => window.location.reload());
+    if (amountRef.current <= 0 || !expenseTypeRef.current) return;
+    createExpense(amountRef.current, expenseTypeRef.current);
   };
 
   return (
